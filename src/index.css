@@ -1,0 +1,6 @@
+/* BlindSpot - Main Stylesheet */
+/* Pure CSS - No Tailwind */
+@import './styles/variables.css';
+@import './styles/global.css';
+@import './styles/components.css';
+@import './styles/pages.css';

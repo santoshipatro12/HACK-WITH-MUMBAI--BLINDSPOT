@@ -1,0 +1,60 @@
+/* BlindSpot Design System - Light Theme */
+:root {
+  /* Primary Colors */
+  --color-mint-cream: #EBF5EE;
+  --color-pale-sky: #B2CBD5;
+  --color-steel-blue: #78A1BB;
+  --color-blue-slate: #506980;
+  --color-space-indigo: #283044;
+
+  /* Semantic Colors */
+  --color-background: #EBF5EE;
+  --color-surface: #FFFFFF;
+  --color-surface-secondary: #F5F9F7;
+  --color-border: rgba(120, 161, 187, 0.2);
+  --color-border-strong: rgba(120, 161, 187, 0.4);
+
+  /* Text Colors */
+  --color-text-primary: #283044;
+  --color-text-secondary: #506980;
+  --color-text-muted: #78A1BB;
+
+  /* Status Colors */
+  --color-success: #22C55E;
+  --color-success-light: rgba(34, 197, 94, 0.1);
+  --color-warning: #F59E0B;
+  --color-warning-light: rgba(245, 158, 11, 0.1);
+  --color-danger: #EF4444;
+  --color-danger-light: rgba(239, 68, 68, 0.1);
+
+  /* Typography */
+  --font-display: 'Space Grotesk', system-ui, sans-serif;
+  --font-body: 'Inter', system-ui, sans-serif;
+
+  /* Spacing */
+  --space-xs: 4px;
+  --space-sm: 8px;
+  --space-md: 16px;
+  --space-lg: 24px;
+  --space-xl: 32px;
+  --space-2xl: 48px;
+  --space-3xl: 64px;
+
+  /* Border Radius */
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 24px;
+  --radius-full: 9999px;
+
+  /* Shadows */
+  --shadow-sm: 0 1px 2px rgba(40, 48, 68, 0.05);
+  --shadow-md: 0 4px 6px rgba(40, 48, 68, 0.07), 0 2px 4px rgba(40, 48, 68, 0.05);
+  --shadow-lg: 0 10px 15px rgba(40, 48, 68, 0.1), 0 4px 6px rgba(40, 48, 68, 0.05);
+  --shadow-xl: 0 20px 25px rgba(40, 48, 68, 0.1), 0 10px 10px rgba(40, 48, 68, 0.04);
+
+  /* Transitions */
+  --transition-fast: 150ms ease;
+  --transition-normal: 250ms ease;
+  --transition-slow: 400ms ease;
+}
