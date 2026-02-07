@@ -14,6 +14,7 @@ export interface Assumption {
   text: string;
   category: 'market' | 'technical' | 'execution';
   severity: 'low' | 'medium' | 'high';
+  riskLevel?: string;
 }
 
 export interface RiskScore {
@@ -28,6 +29,8 @@ export interface Competitor {
   name: string;
   description: string;
   threat: 'low' | 'medium' | 'high';
+  type?: string;
+  url?: string;
 }
 
 export interface FailedStartup {
@@ -36,6 +39,8 @@ export interface FailedStartup {
   failureReasons: string[];
   patternTags: string[];
   raised?: string;
+  reason?: string;
+  lesson?: string;
 }
 
 export interface ActionItem {

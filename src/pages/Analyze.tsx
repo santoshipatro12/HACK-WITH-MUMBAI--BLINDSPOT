@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
-import { 
-  Rocket, Users, Building2, Monitor, CreditCard, 
+import {
+  Rocket, Users, Building2, Monitor, CreditCard,
   Layers, Link2, ArrowLeft, Zap, Sparkles, Shield
 } from 'lucide-react';
 import { Button } from '../components/common/Button';
@@ -88,7 +88,7 @@ export function Analyze() {
 
     // Run analysis
     const result = runBlindSpotAnalysis(formData);
-    
+
     // Store result and navigate
     sessionStorage.setItem('blindspot_result', JSON.stringify(result));
     navigate('/results');
@@ -102,9 +102,9 @@ export function Analyze() {
       <motion.div
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
-        style={{ 
-          display: 'flex', 
-          justifyContent: 'space-between', 
+        style={{
+          display: 'flex',
+          justifyContent: 'space-between',
           alignItems: 'center',
           maxWidth: '700px',
           margin: '0 auto var(--space-xl)'
@@ -114,10 +114,10 @@ export function Analyze() {
           <ArrowLeft size={16} />
           Back
         </Button>
-        <div 
-          style={{ 
-            display: 'flex', 
-            alignItems: 'center', 
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
             gap: 'var(--space-sm)',
             cursor: 'pointer'
           }}
@@ -135,8 +135,8 @@ export function Analyze() {
           }}>
             <Shield size={18} />
           </div>
-          <span style={{ 
-            fontFamily: 'var(--font-display)', 
+          <span style={{
+            fontFamily: 'var(--font-display)',
             fontWeight: 700,
             fontSize: '20px'
           }}>

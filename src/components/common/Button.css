@@ -1,0 +1,137 @@
+/* ============================================
+   BUTTON COMPONENT - PREMIUM STYLES
+============================================ */
+
+.btn-premium {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-weight: 600;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  overflow: hidden;
+}
+
+.btn-premium:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Content Layer */
+.btn-content {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+
+.btn-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Spinner */
+.btn-spinner {
+  width: 18px;
+  height: 18px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top-color: white;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+/* ============================================
+   SIZES
+============================================ */
+
+.btn-size-sm {
+  padding: 10px 18px;
+  font-size: 13px;
+  border-radius: 10px;
+}
+
+.btn-size-md {
+  padding: 14px 28px;
+  font-size: 14px;
+}
+
+.btn-size-lg {
+  padding: 18px 36px;
+  font-size: 16px;
+  border-radius: 14px;
+}
+
+/* ============================================
+   VARIANTS
+============================================ */
+
+/* Primary */
+.btn-primary {
+  color: #FFFFFF;
+  background: linear-gradient(135deg, #6366F1 0%, #8B5CF6 100%);
+  box-shadow: 0 4px 20px rgba(99, 102, 241, 0.35);
+}
+
+.btn-primary:hover:not(:disabled) {
+  box-shadow: 0 8px 35px rgba(99, 102, 241, 0.5);
+}
+
+/* Secondary */
+.btn-secondary {
+  color: #A5B4FC;
+  background: rgba(99, 102, 241, 0.1);
+  border: 1.5px solid rgba(139, 92, 246, 0.25);
+}
+
+.btn-secondary:hover:not(:disabled) {
+  color: #F8FAFC;
+  background: rgba(99, 102, 241, 0.2);
+  border-color: rgba(139, 92, 246, 0.5);
+}
+
+.btn-secondary .btn-spinner {
+  border-color: rgba(139, 92, 246, 0.3);
+  border-top-color: #8B5CF6;
+}
+
+/* Ghost */
+.btn-ghost {
+  color: #94A3B8;
+  background: transparent;
+}
+
+.btn-ghost:hover:not(:disabled) {
+  color: #F8FAFC;
+  background: rgba(139, 92, 246, 0.1);
+}
+
+.btn-ghost .btn-spinner {
+  border-color: rgba(148, 163, 184, 0.3);
+  border-top-color: #94A3B8;
+}
+
+/* Danger */
+.btn-danger {
+  color: #FFFFFF;
+  background: linear-gradient(135deg, #EF4444 0%, #DC2626 100%);
+  box-shadow: 0 4px 20px rgba(239, 68, 68, 0.35);
+}
+
+.btn-danger:hover:not(:disabled) {
+  box-shadow: 0 8px 35px rgba(239, 68, 68, 0.5);
+}
+
+/* ============================================
+   LOADING STATE
+============================================ */
+
+.btn-loading {
+  pointer-events: none;
+}
