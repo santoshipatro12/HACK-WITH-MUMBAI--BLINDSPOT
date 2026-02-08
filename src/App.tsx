@@ -5,6 +5,7 @@ import { Landing } from './pages/Landing';
 import { Auth } from './pages/Auth';
 import { Analyze } from './pages/Analyze';
 import { Results } from './pages/Results';
+import { Dashboard } from './pages/Dashboard';
 
 function App() {
   return (
@@ -14,23 +15,31 @@ function App() {
           {/* Public Routes */}
           <Route path="/" element={<Landing />} />
           <Route path="/auth" element={<Auth />} />
-          
+
           {/* Protected Routes */}
-          <Route 
-            path="/analyze" 
+          <Route
+            path="/analyze"
             element={
               <ProtectedRoute>
                 <Analyze />
               </ProtectedRoute>
-            } 
+            }
           />
-          <Route 
-            path="/results" 
+          <Route
+            path="/results"
             element={
               <ProtectedRoute>
                 <Results />
               </ProtectedRoute>
-            } 
+            }
+          />
+          <Route
+            path="/dashboard"
+            element={
+              <ProtectedRoute>
+                <Dashboard />
+              </ProtectedRoute>
+            }
           />
         </Routes>
       </Router>
