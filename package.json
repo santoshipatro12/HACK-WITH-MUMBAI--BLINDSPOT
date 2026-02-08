@@ -10,7 +10,10 @@
   },
   "dependencies": {
     "clsx": "2.1.1",
+<<<<<<< HEAD
     "firebase": "^12.9.0",
+=======
+>>>>>>> 78650234ce965d340ef4c863484d657347a6490e
     "framer-motion": "^12.33.0",
     "lucide-react": "^0.563.0",
     "react": "19.2.3",
@@ -24,9 +27,13 @@
     "@types/react": "19.2.7",
     "@types/react-dom": "19.2.3",
     "@vitejs/plugin-react": "5.1.1",
+<<<<<<< HEAD
     "autoprefixer": "^10.4.24",
     "postcss": "^8.5.6",
     "tailwindcss": "^4.1.18",
+=======
+    "tailwindcss": "4.1.17",
+>>>>>>> 78650234ce965d340ef4c863484d657347a6490e
     "typescript": "5.9.3",
     "vite": "7.2.4",
     "vite-plugin-singlefile": "2.3.0"

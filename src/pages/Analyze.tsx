@@ -1,63 +1,16 @@
-// pages/Analyze.tsx
-
 import { useState } from 'react';
-import { motion, Variants } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
-import {
-  Rocket, Users, Building2, Monitor, CreditCard,
-  Layers, Link2, ArrowLeft, Zap, Sparkles, Shield,
-  Lightbulb, AlertTriangle, CheckCircle2, Target,
-  Globe, TrendingUp, Skull, Database
+import { 
+  Rocket, Users, Building2, Monitor, CreditCard, 
+  Layers, Link2, ArrowLeft, Zap, Sparkles, Shield
 } from 'lucide-react';
 import { Button } from '../components/common/Button';
 import { FormInput } from '../components/common/FormInput';
 import { FormSelect } from '../components/common/FormSelect';
 import { StartupInput } from '../types';
-import { runFullAnalysis } from '../utils/analysisEngine';
-import './Analyze.css';
+import { runBlindSpotAnalysis } from '../logic';
 
-// Animation variants
-const containerVariants: Variants = {
-  hidden: { opacity: 0 },
-  visible: {
-    opacity: 1,
-    transition: {
-      staggerChildren: 0.12,
-      delayChildren: 0.1,
-    },
-  },
-};
-
-const cardVariants: Variants = {
-  hidden: {
-    opacity: 0,
-    y: 30,
-    scale: 0.97,
-  },
-  visible: {
-    opacity: 1,
-    y: 0,
-    scale: 1,
-    transition: {
-      duration: 0.5,
-      ease: [0.25, 0.46, 0.45, 0.94] as const,
-    },
-  },
-};
-
-const inputVariants: Variants = {
-  hidden: { opacity: 0, x: -15 },
-  visible: {
-    opacity: 1,
-    x: 0,
-    transition: {
-      duration: 0.4,
-      ease: 'easeOut',
-    },
-  },
-};
-
-// Dropdown options
 const targetUsersOptions = [
   { value: 'consumers', label: 'Consumers (B2C)' },
   { value: 'smb', label: 'Small & Medium Businesses (SMB)' },
@@ -107,255 +60,9 @@ const dependencyOptions = [
   { value: 'regulation', label: 'Regulatory Approval' },
 ];
 
-// Pipeline steps data
-const pipelineSteps = [
-  { name: 'Assumptions', icon: Lightbulb },
-  { name: 'Risks', icon: AlertTriangle },
-  { name: 'Competition', icon: Target },
-  { name: 'Autopsy', icon: Shield },
-  { name: 'Decision', icon: CheckCircle2 },
-  { name: 'Actions', icon: Zap },
-];
-
-// Analysis stages for loading
-const analysisStages = [
-  { id: 'competitors', text: 'Searching competitors...', icon: Globe },
-  { id: 'trends', text: 'Analyzing market trends...', icon: TrendingUp },
-  { id: 'failures', text: 'Finding failure patterns...', icon: Skull },
-  { id: 'insights', text: 'Generating insights...', icon: Zap },
-];
-
-// Section Card Component
-interface SectionCardProps {
-  title: string;
-  subtitle: string;
-  icon: React.ReactNode;
-  sectionNumber: number;
-  children: React.ReactNode;
-}
-
-const SectionCard: React.FC<SectionCardProps> = ({
-  title,
-  subtitle,
-  icon,
-  sectionNumber,
-  children,
-}) => {
-  return (
-    <motion.div variants={cardVariants} className="section-card">
-      <div className="section-header">
-        <div className="section-number">{sectionNumber}</div>
-        <div className="section-icon">{icon}</div>
-        <div className="section-title-group">
-          <h2 className="section-title">{title}</h2>
-          <p className="section-subtitle">{subtitle}</p>
-        </div>
-      </div>
-      <motion.div
-        className="section-content"
-        variants={containerVariants}
-        initial="hidden"
-        animate="visible"
-      >
-        {children}
-      </motion.div>
-    </motion.div>
-  );
-};
-
-// Progress Indicator Component
-interface ProgressIndicatorProps {
-  formData: StartupInput;
-}
-
-const ProgressIndicator: React.FC<ProgressIndicatorProps> = ({ formData }) => {
-  const fields = Object.values(formData);
-  const filledFields = fields.filter(field => field.trim() !== '').length;
-  const progress = (filledFields / fields.length) * 100;
-
-  return (
-    <motion.div
-      className="progress-container"
-      initial={{ opacity: 0, y: -10 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: 0.3 }}
-    >
-      <div className="progress-info">
-        <span className="progress-text">
-          <CheckCircle2 size={14} />
-          Form Progress
-        </span>
-        <span className="progress-percentage">{filledFields}/{fields.length} fields</span>
-      </div>
-      <div className="progress-bar">
-        <motion.div
-          className="progress-fill"
-          initial={{ width: 0 }}
-          animate={{ width: `${progress}%` }}
-          transition={{ duration: 0.5, ease: 'easeOut' }}
-        />
-      </div>
-    </motion.div>
-  );
-};
-
-// Pipeline Preview Component
-const PipelinePreview: React.FC = () => {
-  return (
-    <motion.div
-      className="pipeline-preview"
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: 0.8 }}
-    >
-      <h3 className="pipeline-title">Analysis Pipeline</h3>
-      <div className="pipeline-steps">
-        {pipelineSteps.map((step, index) => (
-          <motion.div
-            key={step.name}
-            className="pipeline-step-wrapper"
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: 0.9 + index * 0.08 }}
-          >
-            <div className="pipeline-step">
-              <div className="pipeline-step-icon">
-                <step.icon size={12} />
-              </div>
-              {step.name}
-            </div>
-            {index < pipelineSteps.length - 1 && (
-              <span className="pipeline-arrow">→</span>
-            )}
-          </motion.div>
-        ))}
-      </div>
-    </motion.div>
-  );
-};
-
-// Loading Overlay Component
-interface LoadingOverlayProps {
-  isVisible: boolean;
-  stages: { id: string; text: string; icon: React.ComponentType<{ size?: number }> }[];
-  completedStages: string[];
-  startupName: string;
-}
-
-const LoadingOverlay: React.FC<LoadingOverlayProps> = ({
-  isVisible,
-  stages,
-  completedStages,
-  startupName
-}) => {
-  if (!isVisible) return null;
-
-  return (
-    <motion.div
-      className="loading-overlay"
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-    >
-      <div className="loading-content">
-        <motion.div
-          className="loading-icon-wrapper"
-          animate={{
-            rotate: 360,
-            scale: [1, 1.1, 1]
-          }}
-          transition={{
-            rotate: { duration: 2, repeat: Infinity, ease: 'linear' },
-            scale: { duration: 1, repeat: Infinity }
-          }}
-        >
-          <Shield size={48} />
-        </motion.div>
-
-        <motion.h2
-          className="loading-title"
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2 }}
-        >
-          Analyzing {startupName || 'Your Startup'}
-        </motion.h2>
-
-        <motion.p
-          className="loading-subtitle"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.3 }}
-        >
-          Fetching real-time data from multiple sources...
-        </motion.p>
-
-        <div className="loading-stages">
-          {stages.map((stage, index) => {
-            const StageIcon = stage.icon;
-            const isCompleted = completedStages.includes(stage.id);
-
-            return (
-              <motion.div
-                key={stage.id}
-                className={`loading-stage ${isCompleted ? 'completed' : ''}`}
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 0.4 + index * 0.15 }}
-              >
-                <div className="loading-stage-icon">
-                  <StageIcon size={16} />
-                </div>
-                <span className="loading-stage-text">{stage.text}</span>
-                {isCompleted && (
-                  <motion.div
-                    className="loading-stage-check"
-                    initial={{ scale: 0 }}
-                    animate={{ scale: 1 }}
-                    transition={{ type: 'spring', stiffness: 300 }}
-                  >
-                    <CheckCircle2 size={16} />
-                  </motion.div>
-                )}
-              </motion.div>
-            );
-          })}
-        </div>
-
-        <motion.div
-          className="loading-progress-bar"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.5 }}
-        >
-          <motion.div
-            className="loading-progress-fill"
-            initial={{ width: 0 }}
-            animate={{ width: `${(completedStages.length / stages.length) * 100}%` }}
-            transition={{ duration: 0.5 }}
-          />
-        </motion.div>
-
-        <motion.div
-          className="loading-sources"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.8 }}
-        >
-          <Database size={12} />
-          <span>Sources: DuckDuckGo, Hacker News, GitHub</span>
-        </motion.div>
-      </div>
-    </motion.div>
-  );
-};
-
-// Main Component
 export function Analyze() {
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
-  const [completedStages, setCompletedStages] = useState<string[]>([]);
-  const [error, setError] = useState<string | null>(null);
   const [formData, setFormData] = useState<StartupInput>({
     name: '',
     idea: '',
@@ -367,299 +74,201 @@ export function Analyze() {
     criticalDependency: '',
   });
 
-  const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
-  ) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
-    // Clear error when user starts typing
-    if (error) setError(null);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
-    setError(null);
-    setCompletedStages([]);
 
-    try {
-      // Simulate stage completion for visual feedback
-      const stageDelays = [
-        { id: 'competitors', delay: 800 },
-        { id: 'trends', delay: 1600 },
-        { id: 'failures', delay: 2400 },
-        { id: 'insights', delay: 3200 },
-      ];
+    // Simulate processing time for effect
+    await new Promise(resolve => setTimeout(resolve, 2000));
 
-      // Start stage completion timers
-      stageDelays.forEach(({ id, delay }) => {
-        setTimeout(() => {
-          setCompletedStages(prev => [...prev, id]);
-        }, delay);
-      });
-
-      // Run the REAL analysis with API calls
-      console.log('🚀 Starting BlindSpot analysis for:', formData.name);
-      const result = await runFullAnalysis(formData);
-      console.log('✅ Analysis complete:', result.decision);
-
-      // Ensure minimum loading time for UX
-      await new Promise(resolve => setTimeout(resolve, 500));
-
-      // Store result in sessionStorage
-      sessionStorage.setItem('blindspot_result', JSON.stringify(result));
-
-      // Navigate to results
-      navigate('/results');
-    } catch (err) {
-      console.error('❌ Analysis failed:', err);
-      setError(err instanceof Error ? err.message : 'Analysis failed. Please try again.');
-      setIsLoading(false);
-      setCompletedStages([]);
-    }
+    // Run analysis
+    const result = runBlindSpotAnalysis(formData);
+    
+    // Store result and navigate
+    sessionStorage.setItem('blindspot_result', JSON.stringify(result));
+    navigate('/results');
   };
 
   const isFormValid = Object.values(formData).every(v => v.trim() !== '');
 
   return (
     <div className="analyze-page">
-      {/* Loading Overlay */}
-      <LoadingOverlay
-        isVisible={isLoading}
-        stages={analysisStages}
-        completedStages={completedStages}
-        startupName={formData.name}
-      />
-
       {/* Header */}
       <motion.div
-        className="analyze-header"
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
+        style={{ 
+          display: 'flex', 
+          justifyContent: 'space-between', 
+          alignItems: 'center',
+          maxWidth: '700px',
+          margin: '0 auto var(--space-xl)'
+        }}
       >
         <Button variant="ghost" onClick={() => navigate('/')}>
           <ArrowLeft size={16} />
           Back
         </Button>
-        <div className="logo-group" onClick={() => navigate('/')}>
-          <div className="logo-icon-box">
-            <Shield size={20} />
+        <div 
+          style={{ 
+            display: 'flex', 
+            alignItems: 'center', 
+            gap: 'var(--space-sm)',
+            cursor: 'pointer'
+          }}
+          onClick={() => navigate('/')}
+        >
+          <div style={{
+            width: '36px',
+            height: '36px',
+            borderRadius: '8px',
+            background: 'linear-gradient(135deg, var(--color-steel-blue), var(--color-blue-slate))',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            color: 'white'
+          }}>
+            <Shield size={18} />
           </div>
-          <span className="logo-text">
-            Blind<span>Spot</span>
+          <span style={{ 
+            fontFamily: 'var(--font-display)', 
+            fontWeight: 700,
+            fontSize: '20px'
+          }}>
+            Blind<span style={{ color: 'var(--color-steel-blue)' }}>Spot</span>
           </span>
         </div>
       </motion.div>
 
-      <div className="analyze-container">
-        {/* Page Introduction */}
-        <motion.div
-          className="page-intro"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.1 }}
-        >
-          <motion.div
-            className="page-intro-icon"
-            initial={{ scale: 0, rotate: -10 }}
-            animate={{ scale: 1, rotate: 0 }}
-            transition={{ type: 'spring', delay: 0.2, stiffness: 200 }}
-          >
-            <Sparkles size={32} />
-          </motion.div>
-          <h1>Startup Analysis Intake</h1>
-          <p>
-            Tell us about your startup idea. Our AI will analyze potential
-            blindspots, risks, and competition patterns using real-time data.
-          </p>
-          <div className="data-sources-badge">
-            <Database size={14} />
-            <span>Powered by live data from multiple sources</span>
+      {/* Form */}
+      <motion.div
+        className="analyze-container"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.1 }}
+      >
+        <div className="form-card">
+          <div className="form-header">
+            <motion.div
+              className="form-icon"
+              initial={{ scale: 0 }}
+              animate={{ scale: 1 }}
+              transition={{ type: 'spring', delay: 0.2 }}
+            >
+              <Sparkles size={32} />
+            </motion.div>
+            <h1 className="form-title">Startup Intake Form</h1>
+            <p className="form-subtitle">
+              Tell us about your startup idea. We'll identify the blind spots.
+            </p>
           </div>
-        </motion.div>
 
-        {/* Error Message */}
-        {error && (
-          <motion.div
-            className="error-banner"
-            initial={{ opacity: 0, y: -10 }}
-            animate={{ opacity: 1, y: 0 }}
-          >
-            <AlertTriangle size={18} />
-            <span>{error}</span>
-            <button onClick={() => setError(null)}>×</button>
-          </motion.div>
-        )}
+          <form onSubmit={handleSubmit}>
+            <div className="form-grid">
+              <FormInput
+                label="Startup Name"
+                name="name"
+                value={formData.name}
+                onChange={handleChange}
+                placeholder="e.g., Acme Inc"
+                icon={<Rocket size={16} />}
+              />
+              <FormSelect
+                label="Target Users"
+                name="targetUsers"
+                value={formData.targetUsers}
+                onChange={handleChange}
+                options={targetUsersOptions}
+                icon={<Users size={16} />}
+              />
+            </div>
 
-        {/* Progress Indicator */}
-        <ProgressIndicator formData={formData} />
+            <div style={{ marginTop: 'var(--space-lg)' }} className="form-full">
+              <FormInput
+                label="One-line Idea"
+                name="idea"
+                value={formData.idea}
+                onChange={handleChange}
+                placeholder="Describe your startup in one line..."
+                icon={<Sparkles size={16} />}
+                multiline
+              />
+            </div>
 
-        {/* Form with Section Cards */}
-        <form onSubmit={handleSubmit}>
-          <motion.div
-            variants={containerVariants}
-            initial="hidden"
-            animate="visible"
-          >
-            {/* Section 1: Startup Basics */}
-            <SectionCard
-              sectionNumber={1}
-              title="Startup Basics"
-              subtitle="What's your startup called and what does it do?"
-              icon={<Rocket size={20} />}
-            >
-              <motion.div variants={inputVariants}>
-                <FormInput
-                  label="Startup Name"
-                  name="name"
-                  value={formData.name}
-                  onChange={handleChange}
-                  placeholder="e.g., Acme Inc"
-                  icon={<Rocket size={16} />}
-                />
-              </motion.div>
-              <motion.div variants={inputVariants}>
-                <FormInput
-                  label="One-line Idea"
-                  name="idea"
-                  value={formData.idea}
-                  onChange={handleChange}
-                  placeholder="Describe your startup in one compelling line..."
-                  icon={<Lightbulb size={16} />}
-                  multiline
-                />
-              </motion.div>
-            </SectionCard>
+            <div className="form-grid" style={{ marginTop: 'var(--space-lg)' }}>
+              <FormSelect
+                label="Industry"
+                name="industry"
+                value={formData.industry}
+                onChange={handleChange}
+                options={industryOptions}
+                icon={<Building2 size={16} />}
+              />
+              <FormSelect
+                label="Platform"
+                name="platform"
+                value={formData.platform}
+                onChange={handleChange}
+                options={platformOptions}
+                icon={<Monitor size={16} />}
+              />
+            </div>
 
-            {/* Section 2: Business Details */}
-            <SectionCard
-              sectionNumber={2}
-              title="Business Details"
-              subtitle="Help us understand your business model and target market"
-              icon={<Building2 size={20} />}
-            >
-              <div className="form-grid">
-                <motion.div variants={inputVariants}>
-                  <FormSelect
-                    label="Target Users"
-                    name="targetUsers"
-                    value={formData.targetUsers}
-                    onChange={handleChange}
-                    options={targetUsersOptions}
-                    icon={<Users size={16} />}
-                  />
-                </motion.div>
-                <motion.div variants={inputVariants}>
-                  <FormSelect
-                    label="Industry"
-                    name="industry"
-                    value={formData.industry}
-                    onChange={handleChange}
-                    options={industryOptions}
-                    icon={<Building2 size={16} />}
-                  />
-                </motion.div>
-              </div>
-              <div className="form-grid">
-                <motion.div variants={inputVariants}>
-                  <FormSelect
-                    label="Platform"
-                    name="platform"
-                    value={formData.platform}
-                    onChange={handleChange}
-                    options={platformOptions}
-                    icon={<Monitor size={16} />}
-                  />
-                </motion.div>
-                <motion.div variants={inputVariants}>
-                  <FormSelect
-                    label="Revenue Model"
-                    name="revenueModel"
-                    value={formData.revenueModel}
-                    onChange={handleChange}
-                    options={revenueOptions}
-                    icon={<CreditCard size={16} />}
-                  />
-                </motion.div>
-              </div>
-              <motion.div variants={inputVariants}>
-                <FormSelect
-                  label="Stage"
-                  name="stage"
-                  value={formData.stage}
-                  onChange={handleChange}
-                  options={stageOptions}
-                  icon={<Layers size={16} />}
-                />
-              </motion.div>
-            </SectionCard>
+            <div className="form-grid" style={{ marginTop: 'var(--space-lg)' }}>
+              <FormSelect
+                label="Revenue Model"
+                name="revenueModel"
+                value={formData.revenueModel}
+                onChange={handleChange}
+                options={revenueOptions}
+                icon={<CreditCard size={16} />}
+              />
+              <FormSelect
+                label="Stage"
+                name="stage"
+                value={formData.stage}
+                onChange={handleChange}
+                options={stageOptions}
+                icon={<Layers size={16} />}
+              />
+            </div>
 
-            {/* Section 3: Dependencies */}
-            <SectionCard
-              sectionNumber={3}
-              title="Dependencies & Risks"
-              subtitle="Identify critical dependencies that could impact your startup"
-              icon={<Link2 size={20} />}
-            >
-              <motion.div variants={inputVariants}>
-                <FormSelect
-                  label="Critical Dependency"
-                  name="criticalDependency"
-                  value={formData.criticalDependency}
-                  onChange={handleChange}
-                  options={dependencyOptions}
-                  icon={<Link2 size={16} />}
-                />
-              </motion.div>
-            </SectionCard>
-          </motion.div>
+            <div style={{ marginTop: 'var(--space-lg)' }}>
+              <FormSelect
+                label="Critical Dependency"
+                name="criticalDependency"
+                value={formData.criticalDependency}
+                onChange={handleChange}
+                options={dependencyOptions}
+                icon={<Link2 size={16} />}
+              />
+            </div>
 
-          {/* Submit Section */}
-          <motion.div
-            className="submit-section"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.6 }}
-          >
-            <div className="submit-button-wrapper">
+            <div className="form-actions">
               <Button
                 type="submit"
                 size="lg"
-                disabled={!isFormValid || isLoading}
+                disabled={!isFormValid}
                 isLoading={isLoading}
                 style={{ width: '100%' }}
               >
                 <Zap size={20} />
-                {isLoading ? 'Analyzing...' : 'Run BlindSpot Analysis'}
+                Run BlindSpot Analysis
               </Button>
+              {!isFormValid && (
+                <p className="form-hint">
+                  Please fill in all fields to continue
+                </p>
+              )}
             </div>
-            {!isFormValid && (
-              <motion.p
-                className="submit-hint"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 0.7 }}
-              >
-                <AlertTriangle size={14} />
-                Please fill in all fields to continue
-              </motion.p>
-            )}
-            {isFormValid && !isLoading && (
-              <motion.p
-                className="submit-ready"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-              >
-                <CheckCircle2 size={14} />
-                Ready to analyze with live data
-              </motion.p>
-            )}
-          </motion.div>
-        </form>
-
-        {/* Pipeline Preview */}
-        <PipelinePreview />
-      </div>
+          </form>
+        </div>
+      </motion.div>
     </div>
   );
 }
